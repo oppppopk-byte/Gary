@@ -41,3 +41,23 @@ def say_hi():
 say_hello = gift_wrap(say_hello)#將 say_hello 包裝起來，得到一個新的函式
 
 say_hello
+
+def register_command(name,description):
+    print(f"[登記]指令/{name} - {description}")
+
+    def decorator(func):
+        def wrapper():
+            print(f"[執行]指令/{name} ")
+            func()
+
+        return wrapper  
+    return decorator
+
+
+@register_command("greet","打招呼")
+def hellow_command():
+    print("Hello, Command!")
+
+
+hellow_command()
+print("-------------------------")
