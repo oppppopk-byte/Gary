@@ -51,8 +51,8 @@ async def weather(interaction:discord.Interaction, city_name:str):
 
     city=city_name.strip()
 
-    if not weather_api.api_key
-        await interaction.followup.send("尚未設定 WEATHER_API_KEY，請先在..env檔案中設定。")
+    if not weather_api.api_key:
+        await interaction.followup.send("尚未設定 WEATHER_API_KEY請先在..env檔案中設定。")
         return
 #######################啟動#######################
 def main():
