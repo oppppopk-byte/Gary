@@ -13,7 +13,7 @@ intents.message_content = True
 bot=discord.Client(intents=intents)
 tree=discord.app_commands.CommandTree(bot)
 weather_api = WeatherAPI(os.getenv("OPENWEATHER_API_KEY"))
-def build_weather_embed(weather_summary)
+def build_weather_embed(weather_summary):
     """把整理好的天氣摘要排成Discord卡片"""
     embed = discord.Embed(
         title=f"{weather_summary['city_name']}的當前天氣",
@@ -53,7 +53,22 @@ async def weather(interaction:discord.Interaction, city_name:str):
 
     if not weather_api.api_key:
         await interaction.followup.send("尚未設定 WEATHER_API_KEY請先在..env檔案中設定。")
+        return 
+    try:
+        #向OpenWeatherAPI請求天氣資料
+        #主程式只處理結果，把API的細節封裝在WeatherAPI類別裡
+        weather_summary = weather_api.get_weather_summary(city)
+    except (requests.RequestException, ValueError):
+        await interaction.followup.send("無法取得天氣資料，請稍後再試。")
+        return 
+
+    if weather_summary is None:
+        #如果API回傳的資料不包含預期的欄位，或是城市名稱無效，就會得到None
+        await interaction.followup.send(f"找不到{city}的天氣資料，請確認城市名稱是否正確。")
         return
+    
+    embed = build_weather_embed(weather_summary)#把天氣摘要整理成Discord卡片
+    await interaction.followup.send(embed=embed)#把卡片回.傳給使用者
 #######################啟動#######################
 def main():
     bot.run(os.getenv("DC_BOT_TOKEN"))
