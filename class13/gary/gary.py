@@ -10,7 +10,7 @@ class WeatherAPI:
         self.lang = lang
         self.base_url = 'https://api.openweathermap.org/data/2.5/weather?'
         self.forecast_url = 'https://api.openweathermap.org/data/2.5/forecast?'
-        self.icon_url = 'https://openweathermap.org/img/wn/'
+        self.icon_url = 'https://openweathermap.org/img/wn  /'
     def get_current_weather(self, city_name):
         send_url=(
             f"{self.base_url}appid={self.api_key}&q={city_name}"
@@ -56,3 +56,19 @@ class WeatherAPI:
               raise
         if "city" not in info or "list" not in info:
             return None
+
+        city_label=info["city"].get("name", city_name)
+        forecast_summary = []
+
+        for forecast in info["list"][:forecast_count]:
+            forecast_summary.append(
+                {
+                "city_name": city_label,
+                "datetime": forecast["dt_txt"],
+                "temperature_celsius": round(forecast["main"]["temp"], 2),
+                "description": forecast["weather"][0]["description"],
+                "icon_code": forecast["weather"][0]["icon"],
+                }
+            )
+
+        return forecast_summary
