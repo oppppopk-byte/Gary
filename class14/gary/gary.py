@@ -1,6 +1,6 @@
 #######################匯入模組#######################
 import requests #匯入requests模組，這是一個用於發送HTTP請求的庫
-
+import openai  #匯入openai模組，這是一個用於與OpenAI API進行交互的庫
 #######################定義類別#######################
 class WeatherAPI:
     """把OpenWeather的查詢流程整理成可重複使用的工具類別."""
@@ -72,3 +72,39 @@ class WeatherAPI:
             )
 
         return forecast_summary
+
+
+
+
+class AIAssistant:
+    """把OpenWeather的查詢流程整理成可重複使用的工具類別."""
+
+    def __init__(self, api_key):
+       self.api_key = api_key
+       openai.api_key = api_key
+
+    def ask(self, system_prompt, user_message,temperature=0.2,model="gpt-4o"):
+        """進行一次AI對話，返回AI的回覆"""
+
+        if not self.api_key:
+            return None, "尚未設定 OPENAI_API_KEY，請先在.env檔案中設定。"
+
+
+        message = (
+            [{"role": "system", "content": system_prompt}]
+            + [{"role": "user", "content": user_message}]
+        )
+
+        try:
+            response = openai.chat.completions.create(
+                model=model,
+                messages=message,
+                temperature=temperature,
+            )
+            assistant_message = response.choices[0].message.content
+
+            return assistant_message, None
+        except Exception as e:
+            return None, f"AI對話發生錯誤: {e}"
+
+        
